@@ -19,12 +19,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin' # Use 'temurin' distribution, as 'adoptopenjdk' is deprecated
-
-    - name: Set up Gradle
-      uses: gradle/gradle-build-action@v3
-      with:
-        gradle-version: '8.7' # Ensure the version matches your project's requirements
+        distribution: 'temurin'
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
@@ -38,10 +33,14 @@ jobs:
       env:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         SONAR_AUTH_TOKEN: ${{ secrets.SONAR_AUTH_TOKEN }}
-      run: ./gradlew build sonar \
-        -Dsonar.projectKey=my-project \
-        -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-        -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-        -Dsonar.pullrequest.base=${{ github.base_ref }} \
-        -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
-        -Dsonar.login=${{ env.SONAR_AUTH_TOKEN }}
+      run: |
+        chmod +x gradlew
+        cd src
+        cd adservice
+        ./gradlew build sonarqube \
+          -Dsonar.projectKey=my-project \
+          -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+          -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+          -Dsonar.pullrequest.base=${{ github.base_ref }} \
+          -Dsonar.host.url=${SONAR_HOST_URL} \
+          -Dsonar.login=${SONAR_AUTH_TOKEN}
