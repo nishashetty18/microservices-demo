@@ -43,8 +43,8 @@ jobs:
     - name: Build and Analyze
       working-directory: src/adservice
       env:
-        SONAR_HOST_URL: http://127.0.0.1:9000
-        SONAR_AUTH_TOKEN: ${{ secrets.sonar }}
+        SONAR_HOST_URL: ${SONAR_HOST_URL}
+        SONAR_AUTH_TOKEN: ${SONAR_AUTH_TOKEN}
       run: ./gradlew build sonarqube \
         -Dsonar.projectKey=my-project \
         -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
