@@ -19,30 +19,30 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
-
-    - name: Check Java version
-      run: java -version
+        distribution: 'temurin'  # Changed from 'adoptopenjdk' to 'temurin'
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('src/adservice/**/*.gradle*') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-    - name: Ensure gradlew is executable
-      run: |
-        ls -l gradlew
-        chmod +x gradlew
-        ls -l gradlew
+    - name: Ensure Gradle Wrapper is Executable
+      run: chmod +x src/adservice/gradlew
+
+    - name: Print Gradle Wrapper Version
+      run: src/adservice/gradlew --version
+
+    - name: Verify Gradle Wrapper
+      run: src/adservice/gradlew --version
 
     - name: Build and Analyze
       env:
         SONAR_HOST_URL: http://127.0.0.1:9000
         SONAR_AUTH_TOKEN: ${{ secrets.sonar }}
-      run: ./gradlew build sonarqube \
+      run: src/adservice/gradlew build sonarqube \
         -Dsonar.projectKey=my-project \
         -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
         -Dsonar.pullrequest.branch=${{ github.head_ref }} \
