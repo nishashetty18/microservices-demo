@@ -38,7 +38,7 @@ jobs:
       env:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         SONAR_AUTH_TOKEN: ${{ secrets.SONAR_AUTH_TOKEN }}
-      run: ./gradlew build sonarqube \
+      run: ./gradlew build sonar \
         -Dsonar.projectKey=my-project \
         -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
         -Dsonar.pullrequest.branch=${{ github.head_ref }} \
