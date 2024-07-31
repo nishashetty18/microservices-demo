@@ -1,54 +1,45 @@
-name: CI
+name: Build and Analyze
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
+  build-and-analyze:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'  # Changed from 'adoptopenjdk' to 'temurin'
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # or the version you need
+          distribution: 'temurin'
 
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('src/adservice/**/*.gradle*') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-    - name: Ensure Gradle Wrapper is Executable
-      run: chmod +x src/adservice/gradlew
+      - name: Build and Analyze
+        run: |
+          ./gradlew build sonar \
+            -Dsonar.projectKey=adservice-key \
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_AUTH_TOKEN }} \
+            --info
 
-    - name: Print Gradle Wrapper Version
-      working-directory: src/adservice
-      run: ./gradlew --version
-
-    - name: Verify Gradle Wrapper
-      working-directory: src/adservice
-      run: ./gradlew --version
-
-    - name: Build and Analyze
-      working-directory: src/adservice
-      env:
-        SONAR_HOST_URL: ${SONAR_HOST_URL}
-        SONAR_AUTH_TOKEN: ${SONAR_AUTH_TOKEN}
-      run: ./gradlew build sonar \
-        -Dsonar.projectKey=adservice-key \
-        -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-        -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-        -Dsonar.pullrequest.base=${{ github.base_ref }} \
-        -Dsonar.host.url=${SONAR_HOST_URL} \
-        -Dsonar.login=${SONAR_AUTH_TOKEN}
+      - name: Post Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
