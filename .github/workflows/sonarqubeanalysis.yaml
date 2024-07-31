@@ -21,6 +21,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Check Java version
+      run: java -version
+
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
@@ -30,7 +33,10 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Ensure gradlew is executable
-      run: chmod +x ./gradlew
+      run: |
+        ls -l gradlew
+        chmod +x gradlew
+        ls -l gradlew
 
     - name: Build and Analyze
       env:
