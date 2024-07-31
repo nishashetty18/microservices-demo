@@ -25,17 +25,19 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('src/adservice/**/*.gradle*') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-    - name: Verify Gradle Wrapper
+    - name: Print Gradle Wrapper Contents
       run: |
-        chmod +x gradlew
-        ls -l gradlew
+        ls -l src/adservice/gradlew
+        head -n 10 src/adservice/gradlew
+        file src/adservice/gradlew
 
     - name: Print Gradle Wrapper Version
       run: |
+        cd src/adservice
         ./gradlew --version
 
     - name: Build and Analyze
@@ -43,6 +45,7 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         SONAR_AUTH_TOKEN: ${{ secrets.SONAR_AUTH_TOKEN }}
       run: |
+        cd src/adservice
         ./gradlew build sonarqube \
           -Dsonar.projectKey=my-project \
           -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
