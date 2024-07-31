@@ -31,9 +31,15 @@ jobs:
 
     - name: Print Gradle Wrapper Contents
       run: |
-        ls -l src/adservice/gradlew
-        head -n 10 src/adservice/gradlew
-        file src/adservice/gradlew
+        cd src/adservice
+        ls -l gradlew
+        head -n 10 gradlew
+        file gradlew
+
+    - name: Check Gradle Wrapper Executability
+      run: |
+        cd src/adservice
+        file gradlew
 
     - name: Print Gradle Wrapper Version
       run: |
