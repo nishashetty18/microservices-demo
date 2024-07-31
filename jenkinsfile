@@ -7,6 +7,21 @@ pipeline {
                   git branch: 'main', url: 'https://github.com/nishashetty18/microservices-demo.git'
             }
         }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarQube Scanner'
+                    withSonarQubeEnv('MySonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner " +
+                           "-Dsonar.projectKey=my-project " +
+                           "-Dsonar.pullrequest.key=${env.CHANGE_ID} " +
+                           "-Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} " +
+                           "-Dsonar.pullrequest.base=main " +
+                           "-Dsonar.host.url=${SONARQUBE_URL} " +
+                           "-Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
         /*stage('build adservice') {
             steps {
                 script {
