@@ -29,10 +29,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-    - name: Display Gradle Wrapper Script Content
+    - name: Display Gradle Wrapper Script
       run: |
         cd src/adservice
-        cat gradlew | head -n 20
+        head -n 20 gradlew
 
     - name: Verify Gradle Wrapper Executability
       run: |
@@ -40,10 +40,10 @@ jobs:
         ls -l gradlew
         file gradlew
 
-    - name: Verify Environment Variables
+    - name: Verify JDK Installation
       run: |
-        echo $JAVA_HOME
         java -version
+        javac -version
 
     - name: Test Gradle Wrapper Execution
       run: |
@@ -53,7 +53,7 @@ jobs:
     - name: Debug Gradle Wrapper Execution
       run: |
         cd src/adservice
-        ./gradlew --info --version
+        ./gradlew --info --stacktrace
 
     - name: Build and Analyze
       env:
