@@ -4,7 +4,7 @@ metadata:
   name: example-ingress
 spec:
   rules:
-    - host: onlineboutique.com  
+    - host: microservices.com  
       http:
         paths:
           - path: /
@@ -13,4 +13,4 @@ spec:
               service:
                 name: frontend-external
                 port:
-                  number: 80
+                  number: 31687
