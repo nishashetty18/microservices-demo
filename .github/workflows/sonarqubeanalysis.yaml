@@ -33,16 +33,19 @@ jobs:
       run: chmod +x src/adservice/gradlew
 
     - name: Print Gradle Wrapper Version
-      run: src/adservice/gradlew --version
+      working-directory: src/adservice
+      run: ./gradlew --version
 
     - name: Verify Gradle Wrapper
-      run: src/adservice/gradlew --version
+      working-directory: src/adservice
+      run: ./gradlew --version
 
     - name: Build and Analyze
+      working-directory: src/adservice
       env:
         SONAR_HOST_URL: http://127.0.0.1:9000
         SONAR_AUTH_TOKEN: ${{ secrets.sonar }}
-      run: src/adservice/gradlew build sonarqube \
+      run: ./gradlew build sonarqube \
         -Dsonar.projectKey=my-project \
         -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
         -Dsonar.pullrequest.branch=${{ github.head_ref }} \
