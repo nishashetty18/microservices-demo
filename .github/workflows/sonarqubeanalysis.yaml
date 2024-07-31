@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Build and Analyze
+      env:
+        SONAR_HOST_URL: http://127.0.0.1:9000
+        SONAR_AUTH_TOKEN: ${{ secrets.sonar }}
+      run: ./gradlew build sonarqube \
+        -Dsonar.projectKey=my-project \
+        -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+        -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+        -Dsonar.pullrequest.base=${{ github.base_ref }} \
+        -Dsonar.host.url=${http://127.0.0.1:9000} \
+        -Dsonar.login=${sqp_85f8b0851f60e251809df20d0c1c76705f0cf4c4}

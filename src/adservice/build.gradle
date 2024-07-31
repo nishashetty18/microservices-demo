@@ -3,10 +3,23 @@ plugins {
     id 'com.github.sherter.google-java-format' version '0.9'
     id 'idea'
     id 'application'
+    id "org.sonarqube" version "5.0.0.4638"
+}
+sonarqube {
+    properties {
+        property "sonar.projectKey", "adservice-key"
+        property "sonar.projectName", "adservice"
+        property "sonar.pullrequest.key", System.getenv("SONAR_PULLREQUEST_KEY")
+        property "sonar.pullrequest.branch", System.getenv("SONAR_PULLREQUEST_BRANCH")
+        property "sonar.pullrequest.base", System.getenv("SONAR_PULLREQUEST_BASE")
+        property "sonar.host.url", "http://127.0.0.1:9000"
+        property "sonar.token", "sqp_85f8b0851f60e251809df20d0c1c76705f0cf4c4"
+    }
 }
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.maven.apache.org/maven2" }
     mavenLocal()
 }
 
@@ -14,18 +27,20 @@ description = 'Ad Service'
 group = "adservice"
 version = "0.1.0-SNAPSHOT"
 
-def grpcVersion = "1.64.0"
-def jacksonCoreVersion = "2.17.1"
-def jacksonDatabindVersion = "2.17.1"
+def grpcVersion = "1.63.0"
+def jacksonCoreVersion = "2.17.0"
+def jacksonDatabindVersion = "2.17.0"
 def protocVersion = "3.25.3"
 
-tasks.withType(JavaCompile) {
-    sourceCompatibility = JavaVersion.VERSION_19
-    targetCompatibility = JavaVersion.VERSION_19
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+        // Configure vendor if necessary
+    }
 }
 
 ext {
-    speed = project.hasProperty('speed') ? project.getProperty('speed') : false
+    speed = project.hasProperty('speed') ? project.property('speed').toBoolean() : false
     offlineCompile = new File("$buildDir/output/lib")
 }
 
@@ -33,7 +48,7 @@ dependencies {
     if (speed) {
         implementation fileTree(dir: offlineCompile, include: '*.jar')
     } else {
-        implementation "com.google.api.grpc:proto-google-common-protos:2.40.0",
+        implementation "com.google.api.grpc:proto-google-common-protos:2.37.1",
                 "javax.annotation:javax.annotation-api:1.3.2",
                 "io.grpc:grpc-protobuf:${grpcVersion}",
                 "io.grpc:grpc-stub:${grpcVersion}",
@@ -70,7 +85,10 @@ googleJavaFormat {
     toolVersion '1.22.0'
 }
 
-// Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.
+application {
+    mainClass.set('hipstershop.AdService')
+}
+
 sourceSets {
     main {
         java {
@@ -82,12 +100,13 @@ sourceSets {
 }
 
 startScripts.enabled = false
+verifyGoogleJavaFormat {
+    exclude 'src/main/java/hipstershop/AdService.java'
+    exclude 'src/main/java/hipstershop/AdServiceClient.java'
+}
 
-// This to cache dependencies during Docker image building. First build will take time.
-// Subsequent build will be incremental.
+
 task downloadRepos(type: Copy) {
-    from configurations.compileClasspath
-    into offlineCompile
     from configurations.compileClasspath
     into offlineCompile
 }
@@ -97,9 +116,6 @@ task adService(type: CreateStartScripts) {
     applicationName = 'AdService'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = startScripts.classpath
-    // @TODO: https://github.com/GoogleCloudPlatform/microservices-demo/issues/2517
-    // defaultJvmOpts =
-    //          ["-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=adservice,-cprof_service_version=1.0.0"]
 }
 
 task adServiceClient(type: CreateStartScripts) {
@@ -107,9 +123,6 @@ task adServiceClient(type: CreateStartScripts) {
     applicationName = 'AdServiceClient'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = startScripts.classpath
-    // @TODO: https://github.com/GoogleCloudPlatform/microservices-demo/issues/2517
-    // defaultJvmOpts =
-    //          ["-agentpath:/opt/cprof/profiler_java_agent.so=-cprof_service=adserviceclient,-cprof_service_version=1.0.0"]
 }
 
 applicationDistribution.into('bin') {
