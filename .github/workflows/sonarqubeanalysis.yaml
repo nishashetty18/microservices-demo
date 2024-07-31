@@ -29,14 +29,20 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Verify Gradle Wrapper
+      run: |
+        chmod +x gradlew
+        ls -l gradlew
+
+    - name: Print Gradle Wrapper Version
+      run: |
+        ./gradlew --version
+
     - name: Build and Analyze
       env:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         SONAR_AUTH_TOKEN: ${{ secrets.SONAR_AUTH_TOKEN }}
       run: |
-        chmod +x gradlew
-        cd src
-        cd adservice
         ./gradlew build sonarqube \
           -Dsonar.projectKey=my-project \
           -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
