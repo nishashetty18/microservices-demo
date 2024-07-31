@@ -19,52 +19,26 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('src/adservice/**/*.gradle*') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-    - name: Print Gradle Wrapper Script
-      run: |
-        cd src/adservice
-        head -n 20 gradlew
-
-    - name: Verify Gradle Wrapper Executability
-      run: |
-        cd src/adservice
-        ls -l gradlew
-        file gradlew
-
-    - name: Verify JDK Installation
-      run: |
-        java -version
-        javac -version
-
-    - name: Test Gradle Wrapper Execution
-      run: |
-        cd src/adservice
-        ./gradlew --version
-
-    - name: Debug Gradle Wrapper Execution
-      run: |
-        cd src/adservice
-        ./gradlew --info --stacktrace
+    - name: Ensure gradlew is executable
+      run: chmod +x ./gradlew
 
     - name: Build and Analyze
       env:
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        SONAR_AUTH_TOKEN: ${{ secrets.SONAR_AUTH_TOKEN }}
-      run: |
-        cd src/adservice
-        ./gradlew build sonarqube \
-          -Dsonar.projectKey=my-project \
-          -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-          -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-          -Dsonar.pullrequest.base=${{ github.base_ref }} \
-          -Dsonar.host.url=${SONAR_HOST_URL} \
-          -Dsonar.login=${SONAR_AUTH_TOKEN}
+        SONAR_HOST_URL: http://127.0.0.1:9000
+        SONAR_AUTH_TOKEN: ${{ secrets.sonar }}
+      run: ./gradlew build sonarqube \
+        -Dsonar.projectKey=my-project \
+        -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+        -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+        -Dsonar.pullrequest.base=${{ github.base_ref }} \
+        -Dsonar.host.url=${SONAR_HOST_URL} \
+        -Dsonar.login=${SONAR_AUTH_TOKEN}
