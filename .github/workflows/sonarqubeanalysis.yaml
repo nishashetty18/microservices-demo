@@ -15,12 +15,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adoptopenjdk' 
-
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'adoptopenjdk'
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
@@ -39,5 +38,5 @@ jobs:
         -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
         -Dsonar.pullrequest.branch=${{ github.head_ref }} \
         -Dsonar.pullrequest.base=${{ github.base_ref }} \
-        -Dsonar.host.url=${http://127.0.0.1:9000} \
-        -Dsonar.login=${sqp_85f8b0851f60e251809df20d0c1c76705f0cf4c4}
+        -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+        -Dsonar.login=${{ secrets.SONAR_AUTH_TOKEN }}
