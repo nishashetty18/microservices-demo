@@ -33,7 +33,7 @@ jobs:
       run: |
         cd src/adservice
         ls -l gradlew
-        head -n 10 gradlew
+        head -n 20 gradlew
         file gradlew
 
     - name: Check Gradle Wrapper Executability
@@ -41,10 +41,15 @@ jobs:
         cd src/adservice
         file gradlew
 
-    - name: Print Gradle Wrapper Version
+    - name: Verify Java Installation
+      run: |
+        java -version
+        echo $JAVA_HOME
+
+    - name: Debug Gradle Wrapper Execution
       run: |
         cd src/adservice
-        ./gradlew --version
+        ./gradlew --debug --version
 
     - name: Build and Analyze
       env:
