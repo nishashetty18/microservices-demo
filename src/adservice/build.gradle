@@ -86,7 +86,7 @@ googleJavaFormat {
 }
 
 application {
-    mainClass.set('hipstershop.AdService')
+    mainClass = 'hipstershop.AdService'
 }
 
 sourceSets {
@@ -100,10 +100,13 @@ sourceSets {
 }
 
 startScripts.enabled = false
-
 verifyGoogleJavaFormat {
     exclude 'src/main/java/hipstershop/AdService.java'
     exclude 'src/main/java/hipstershop/AdServiceClient.java'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:deprecation']
 }
 
 task downloadRepos(type: Copy) {
@@ -128,5 +131,5 @@ task adServiceClient(type: CreateStartScripts) {
 applicationDistribution.into('bin') {
     from(adService)
     from(adServiceClient)
-    
+    filePermissions.set(0755) // Updated method for setting file permissions
 }
