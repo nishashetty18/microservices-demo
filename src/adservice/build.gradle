@@ -131,5 +131,7 @@ task adServiceClient(type: CreateStartScripts) {
 applicationDistribution.into('bin') {
     from(adService)
     from(adServiceClient)
-    filePermissions.set(0755) // Updated method for setting file permissions
+    eachFile { file ->
+        file.filePermissions = 0755
+    }
 }
