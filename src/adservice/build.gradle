@@ -36,7 +36,6 @@ def protocVersion = "3.25.3"
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
-        // Configure vendor if necessary
     }
 }
 
@@ -129,7 +128,5 @@ task adServiceClient(type: CreateStartScripts) {
 applicationDistribution.into('bin') {
     from(adService)
     from(adServiceClient)
-    filePermissions { permissions ->
-        permissions.mode = '0755'
-    }
+    
 }
