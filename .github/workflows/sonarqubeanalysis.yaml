@@ -30,6 +30,8 @@ jobs:
         run: |
           cd src/adservice
           chmod +x gradlew
+          ./gradlew clean \
+          ./gradlew build \
           ./gradlew sonar \
             -Dsonar.pullrequest.key="${{ github.event.pull_request.number }}" \
             -Dsonar.pullrequest.branch="${{ github.head_ref }}" \
