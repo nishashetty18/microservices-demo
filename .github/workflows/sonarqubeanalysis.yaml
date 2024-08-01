@@ -14,7 +14,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17' # or the version you need
+          java-version: '17' 
           distribution: 'temurin'
 
       - name: Cache Gradle packages
@@ -33,7 +33,7 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_AUTH_TOKEN }} \
+            -Dsonar.token=${{ secrets.SONAR_AUTH_TOKEN }} \
             --info
 
       - name: Post Cache Gradle packages
