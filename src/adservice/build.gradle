@@ -5,6 +5,7 @@ plugins {
     id 'application'
     id "org.sonarqube" version "5.0.0.4638"
 }
+
 sonarqube {
     properties {
         property "sonar.projectKey", "adservice-key"
@@ -100,11 +101,11 @@ sourceSets {
 }
 
 startScripts.enabled = false
+
 verifyGoogleJavaFormat {
     exclude 'src/main/java/hipstershop/AdService.java'
     exclude 'src/main/java/hipstershop/AdServiceClient.java'
 }
-
 
 task downloadRepos(type: Copy) {
     from configurations.compileClasspath
@@ -128,5 +129,7 @@ task adServiceClient(type: CreateStartScripts) {
 applicationDistribution.into('bin') {
     from(adService)
     from(adServiceClient)
-    fileMode = 0755
+    filePermissions { permissions ->
+        permissions.mode = '0755'
+    }
 }
