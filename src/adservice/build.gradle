@@ -131,7 +131,5 @@ task adServiceClient(type: CreateStartScripts) {
 applicationDistribution.into('bin') {
     from(adService)
     from(adServiceClient)
-    eachFile { file ->
-        file.filePermissions = 0755
-    }
+    // Removed fileMode setting here
 }
