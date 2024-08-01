@@ -27,6 +27,7 @@ jobs:
 
       - name: Build and Analyze
         run: |
+          cd src/adservice
           chmod +x gradlew
           ./gradlew sonar \
             -Dsonar.pullrequest.key="${{ github.event.pull_request.number }}" \
